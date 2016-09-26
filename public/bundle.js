@@ -40668,11 +40668,17 @@
 	};
 	
 	
-	controller.$inject = ['imageService', 'galleryService', '$state', '$stateParams'];
-	function controller(imageService, galleryService, $state, $stateParams) {
+	controller.$inject = ['imageService', 'galleryService', '$state', '$stateParams', 'userService'];
+	function controller(imageService, galleryService, $state, $stateParams, userService) {
 	  var _this = this;
 	
 	  this.styles = _app4.default;
+	  var loggedIn = userService.isAuthenticated();
+	  if (loggedIn) {
+	    this.navbar = true;
+	  } else {
+	    this.navbar = false;
+	  }
 	
 	  // Navigation methods
 	
@@ -40701,6 +40707,12 @@
 	    _this.addImageSubForm = false;
 	    _this.newGallerySubForm = false;
 	    _this.addImageToGallerySubForm = !_this.addImageToGallerySubForm;
+	  };
+	
+	  this.logout = function () {
+	    userService.logout();
+	    _this.navbar = false;
+	    $state.go('home');
 	  };
 	
 	  // handling image methods
@@ -40765,7 +40777,7 @@
 	      return console.log(err);
 	    });
 	  };
-	  // this.getGalleries(); // init on load?
+	  if (loggedIn) this.getGalleries(); // init on load?
 	
 	  // This method controls the top option text
 	  this.populateGalleryList = function () {
@@ -40775,8 +40787,8 @@
 	      _this.defaulChoiceText = 'Gallery Select';
 	    }
 	  };
-	  // this.gallery = 'all'; // init on load
-	  // this.populateGalleryList(); // init on load
+	  if (loggedIn) this.gallery = 'all'; // init on load
+	  if (loggedIn) this.populateGalleryList(); // init on load
 	
 	  // This method changes state for gallery selections
 	  this.selectGallery = function () {
@@ -40804,7 +40816,7 @@
 /* 25 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"container\">\n\n  <section class=\"row\" >\n    <div class=\"four columns\">\n      <h4>Image Gallery</h4>\n    </div>\n    <div class=\"u-pull-right\">\n      <button class=\"button-primary\" ui-sref=\"home\">Home</button>\n      <button class=\"button-primary\" ng-click=\"$ctrl.navSelect('list')\">List View</button>\n      <button class=\"button-primary\" ng-click=\"$ctrl.navSelect('thumbs')\">Thumbnails</button>\n      <button class=\"button-primary\" ng-click=\"$ctrl.navSelect('full')\">Full Images</button>\n    </div>\n  </section>\n\n  <section class=\"row twelve columns\">\n    <select ng-model=\"$ctrl.gallery\" ng-change=\"$ctrl.selectGallery()\">\n      <option value=\"all\">{{$ctrl.defaulChoiceText}}</option>\n      <option ng-repeat=\"gallery in $ctrl.galleries\" value=\"{{gallery._id}}\">{{gallery.name}}</option>\n    </select>\n    <button class=\"button-primary\" ng-click=\"$ctrl.toggleImageForm()\">Add Image To Database</button>\n    <button class=\"button-primary\" ng-click=\"$ctrl.toggleNewGallerySubForm()\">Start A New Gallery</button>\n    <button class=\"button-primary\" ng-click=\"$ctrl.toggleImageToGalleryForm()\">Add Image To A Gallery</button>\n  </section>\n  <section class=\"row twelve columns\" ng-show=\"$ctrl.addImageSubForm\">\n    <add-image-form submit-image=\"$ctrl.submitImage\"></add-image-form>\n  </section>\n  <section class=\"row twelve columns\" ng-show=\"$ctrl.newGallerySubForm\">\n    <add-gallery-form submit-gallery=\"$ctrl.submitGallery\" galleries=\"$ctrl.galleries\"></add-gallery-form>\n  </section>\n  <section class=\"row twelve columns\" ng-show=\"$ctrl.addImageToGallerySubForm\">\n    <add-image-to-gallery gallery=\"$ctrl.gallery\" galleries=\"$ctrl.galleries\"></add-gallery-form>\n  </section>\n\n  <!--<ui-view name=\"header\"></ui-view>-->\n  <section class=\"row twelve columns\">\n    <ui-view></ui-view>\n  </section>\n  <!--<ui-view name=\"footer\"></ui-view>-->\n\n</div>\n";
+	module.exports = "<div class=\"container\">\n\n  <section class=\"row\" >\n    <div class=\"four columns\">\n      <h4>Image Gallery</h4>\n    </div>\n    <div class=\"u-pull-right\">\n      <button class=\"button-primary\" ui-sref=\"home\">Home</button>\n      <button ng-show=\"$ctrl.navbar\" class=\"button-primary\" ng-click=\"$ctrl.navSelect('list')\">List View</button>\n      <button ng-show=\"$ctrl.navbar\" class=\"button-primary\" ng-click=\"$ctrl.navSelect('thumbs')\">Thumbnails</button>\n      <button ng-show=\"$ctrl.navbar\" class=\"button-primary\" ng-click=\"$ctrl.navSelect('full')\">Full Images</button>\n      <button ng-show=\"$ctrl.navbar\" class=\"button-primary\" ng-click=\"$ctrl.logout()\">Logout</button>\n      <button ng-show=\"!$ctrl.navbar\" class=\"button-primary\" ng-click=\"$ctrl.navSelect('login')\">Log In</button>\n    </div>\n  </section>\n\n  <section ng-show=\"$ctrl.navbar\" class=\"row twelve columns\">\n    <select ng-model=\"$ctrl.gallery\" ng-change=\"$ctrl.selectGallery()\">\n      <option value=\"all\">{{$ctrl.defaulChoiceText}}</option>\n      <option ng-repeat=\"gallery in $ctrl.galleries\" value=\"{{gallery._id}}\">{{gallery.name}}</option>\n    </select>\n    <button class=\"button-primary\" ng-click=\"$ctrl.toggleImageForm()\">Add Image To Database</button>\n    <button class=\"button-primary\" ng-click=\"$ctrl.toggleNewGallerySubForm()\">Start A New Gallery</button>\n    <button class=\"button-primary\" ng-click=\"$ctrl.toggleImageToGalleryForm()\">Add Image To A Gallery</button>\n  </section>\n  <section class=\"row twelve columns\" ng-show=\"$ctrl.addImageSubForm\">\n    <add-image-form submit-image=\"$ctrl.submitImage\"></add-image-form>\n  </section>\n  <section class=\"row twelve columns\" ng-show=\"$ctrl.newGallerySubForm\">\n    <add-gallery-form submit-gallery=\"$ctrl.submitGallery\" galleries=\"$ctrl.galleries\"></add-gallery-form>\n  </section>\n  <section class=\"row twelve columns\" ng-show=\"$ctrl.addImageToGallerySubForm\">\n    <add-image-to-gallery gallery=\"$ctrl.gallery\" galleries=\"$ctrl.galleries\"></add-gallery-form>\n  </section>\n\n  <!--<ui-view name=\"header\"></ui-view>-->\n  <section class=\"row twelve columns\">\n    <ui-view></ui-view>\n  </section>\n  <!--<ui-view name=\"footer\"></ui-view>-->\n\n</div>\n";
 
 /***/ },
 /* 26 */
@@ -40912,8 +40924,8 @@
 	};
 	
 	
-	controller.$inject = ['userService'];
-	function controller(userService) {
+	controller.$inject = ['userService', '$state'];
+	function controller(userService, $state) {
 	  var _this = this;
 	
 	  this.styles = _login4.default;
@@ -40924,18 +40936,20 @@
 	  };
 	
 	  this.login = function () {
-	    return userService.login(_this.user).then(function (result) {
-	      console.log('Login successful. Result:', result);
+	    return userService.login(_this.user).then(function () {
+	      _this.navbar = true;
+	      $state.go('list');
 	      return true;
 	    }).catch(function (error) {
+	      _this.navbar = false;
 	      console.log('Error logging in:', error);
 	      return false;
 	    });
 	  };
 	
 	  this.signup = function () {
-	    return userService.signup(_this.user).then(function (result) {
-	      console.log('Signup successful. Result:', result);
+	    return userService.signup(_this.user).then(function () {
+	      $state.go('list');
 	      return true;
 	    }).catch(function (error) {
 	      console.log('Error logging in:', error);
@@ -41707,7 +41721,8 @@
 	    resolve: {
 	      images: getImages,
 	      removeImage: removeGalleryImage,
-	      gallery: resolveGallery
+	      gallery: resolveGallery,
+	      navbar: resolveLoggedIn
 	    },
 	    params: {
 	      path: 'list'
@@ -41719,7 +41734,8 @@
 	      requiresAuth: true
 	    },
 	    resolve: {
-	      images: getImages
+	      images: getImages,
+	      navbar: resolveLoggedIn
 	    },
 	    params: {
 	      path: 'list'
@@ -41731,7 +41747,8 @@
 	      requiresAuth: true
 	    },
 	    resolve: {
-	      images: getImages
+	      images: getImages,
+	      loggedIn: resolveLoggedIn
 	    },
 	    params: {
 	      path: 'thumbs'
@@ -41743,7 +41760,8 @@
 	      requiresAuth: true
 	    },
 	    resolve: {
-	      images: getImages
+	      images: getImages,
+	      loggedIn: resolveLoggedIn
 	    },
 	    params: {
 	      path: 'thumbs'
@@ -41755,7 +41773,8 @@
 	      requiresAuth: true
 	    },
 	    resolve: {
-	      images: getImages
+	      images: getImages,
+	      loggedIn: resolveLoggedIn
 	    },
 	    params: {
 	      path: 'full'
@@ -41767,7 +41786,8 @@
 	      requiresAuth: true
 	    },
 	    resolve: {
-	      images: getImages
+	      images: getImages,
+	      loggedIn: resolveLoggedIn
 	    },
 	    params: {
 	      path: 'full'
@@ -41800,6 +41820,10 @@
 	
 	var resolveGallery = ['$stateParams', function ($stateParams) {
 	  return $stateParams.gallery;
+	}];
+	
+	var resolveLoggedIn = ['userService', function (userService) {
+	  return userService.isAuthenticated();
 	}];
 
 /***/ },
