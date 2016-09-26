@@ -12,10 +12,12 @@ const path = require('path');
 const publicPath = path.resolve( __dirname, './public' );
 const indexHtml = path.resolve( __dirname, './index.html' );
 const authCheck = require('./authCheck');
+const cors = require('./cors')('*');
 
 module.exports = app
 .use(morgan('dev'))
 .use(express.static(publicPath))
+.use(cors)
 .get('/', (req,res) => res.sendFile(indexHtml))
 
 .use( (req, res, next) => {
