@@ -8,6 +8,11 @@
   border-radius: 1rem;
   padding: 1rem;
   box-shadow: .5rem .5rem 2rem grey; }
+.outline {
+  border: 1px solid blue;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: .5rem .5rem 2rem grey; }
 .image-list {
   margin: 0;
   padding: 0;
@@ -26,6 +31,15 @@
 
 .img-desc {
   padding: 1rem 0; }
+.outline {
+  border: 1px solid blue;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: .5rem .5rem 2rem grey; }
+
+flex-container {
+  display: flex;
+  justify-content: space-around; }
 .list-table {
   margin: 2%;
   width: 100%; }
